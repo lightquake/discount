@@ -1,9 +1,12 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 module Text.Discount where
+import Data.ByteString
 import Foreign hiding (unsafePerformIO)
 import Foreign.C
 import System.IO.Unsafe (unsafePerformIO)
 
+
+newtype DiscountOption = DiscountOption { unDiscountOption :: CInt } deriving (Eq, Show)
 
 #{enum DiscountOption, DiscountOption
  , noSuperscript     = MKD_NOSUPERSCRIPT
@@ -37,12 +40,11 @@ foreign import ccall unsafe "mkdio.h mkd_compile" mkd_compile :: MMIOPtr -> CInt
 foreign import ccall unsafe "mkdio.h mkd_document" mkd_document :: MMIOPtr -> Ptr CString -> IO CInt
 foreign import ccall unsafe "mkdio.h mkd_cleanup" mkd_cleanup :: MMIOPtr -> IO ()
 
-parse :: String -> String
-parse markdown = unsafePerformIO . alloca $ \out_buf -> do
-  (markdown_c, len) <- newCStringLen markdown
+parseMarkdown :: ByteString -> ByteString
+parseMarkdown markdown = unsafePerformIO . alloca $ \out_buf -> useAsCStringLen markdown $ \(markdown_c, len) -> do
   mmioptr <- mkd_string markdown_c (toEnum len) 0
   mkd_compile mmioptr 0
   mkd_document mmioptr out_buf
-  result <- peek out_buf >>= peekCString
+  result <- peek out_buf >>= packCString
   mkd_cleanup mmioptr
   return result
