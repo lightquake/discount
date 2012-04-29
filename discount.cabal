@@ -11,6 +11,8 @@ build-type:          Simple
 cabal-version:       >=1.8
 
 library
-  -- exposed-modules:
+  ghc-options: -lmarkdown
+  exposed-modules:     Text.Discount
   -- other-modules:
-  build-depends:       base >= 4.3.*
+  build-depends:       base >= 4.3
+                     , text
