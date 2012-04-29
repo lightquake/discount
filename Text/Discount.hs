@@ -1,10 +1,13 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 module Text.Discount (
     parseMarkdown
+  , parseMarkdownUtf8
   , module Text.Discount.Internal
   ) where
 
 import Data.ByteString
+import Data.Text
+import Data.Text.Encoding
 import Foreign hiding (unsafePerformIO)
 import Foreign.C
 import System.IO.Unsafe (unsafePerformIO)
@@ -28,3 +31,6 @@ parseMarkdown opts markdown = unsafePerformIO . alloca $ \out_buf -> useAsCStrin
   return result
 
   where flag = combineOptions opts
+
+parseMarkdownUtf8 :: [DiscountOption] -> Text -> Text
+parseMarkdownUtf8 opts = decodeUtf8 . parseMarkdown opts . encodeUtf8
