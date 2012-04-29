@@ -1,9 +1,10 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 module Text.Discount (
-    parseMarkdown
-  , parseMarkdownUtf8
-  , module Text.Discount.Internal
+    module Text.Discount
+  , DiscountOption
   ) where
+
+#include <mkdio.h>
 
 import Data.ByteString
 import Data.Text
@@ -11,7 +12,31 @@ import Data.Text.Encoding
 import Foreign hiding (unsafePerformIO)
 import Foreign.C
 import System.IO.Unsafe (unsafePerformIO)
-import Text.Discount.Internal hiding (unDiscountOption)
+import Text.Discount.Internal
+
+#{enum DiscountOption, DiscountOption
+ , noSuperscript     = MKD_NOSUPERSCRIPT
+ , noLinks           = MKD_NOLINKS
+ , noImages          = MKD_NOIMAGE
+ , noHeader          = MKD_NOHEADER
+ , noHtml            = MKD_NOHTML
+ , noStrikethrough   = MKD_NOSTRIKETHROUGH
+ , noTables          = MKD_NOTABLES
+ , noSmartypants     = MKD_NOPANTS
+ , noExt             = MKD_NO_EXT
+ , noDivQuote        = MKD_NODIVQUOTE
+ , noAlphaList       = MKD_NOALPHALIST
+ , noDefinitionList  = MKD_NODLIST
+ , autolink          = MKD_AUTOLINK
+ , tagText           = MKD_TAGTEXT
+ , cdata             = MKD_CDATA
+ , strict            = MKD_STRICT
+ , footnotes         = MKD_EXTRA_FOOTNOTE
+ , tableOfContents   = MKD_TOC
+ , safeLink          = MKD_SAFELINK
+ , tabstop           = MKD_TABSTOP
+}
+
 
 data MMIOT = MMIOT
 type MMIOPtr = Ptr MMIOT
@@ -30,7 +55,7 @@ parseMarkdown opts markdown = unsafePerformIO . alloca $ \out_buf -> useAsCStrin
   mkd_cleanup mmioptr
   return result
 
-  where flag = combineOptions opts
+  where flag = unDiscountOption $ combineOptions opts
 
 parseMarkdownUtf8 :: [DiscountOption] -> Text -> Text
 parseMarkdownUtf8 opts = decodeUtf8 . parseMarkdown opts . encodeUtf8
