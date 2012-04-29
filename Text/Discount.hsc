@@ -7,14 +7,25 @@ import System.IO.Unsafe (unsafePerformIO)
 
 #{enum DiscountOption, DiscountOption
  , noSuperscript     = MKD_NOSUPERSCRIPT
+ , noLinks           = MKD_NOLINKS
+ , noImages          = MKD_NOIMAGE
+ , noHeader          = MKD_NOHEADER
+ , noHtml            = MKD_NOHTML
+ , noStrikethrough   = MKD_NOSTRIKETHROUGH
+ , noTables          = MKD_NOTABLES
  , noSmartypants     = MKD_NOPANTS
  , noExt             = MKD_NO_EXT
  , noDivQuote        = MKD_NODIVQUOTE
  , noAlphaList       = MKD_NOALPHALIST
  , noDefinitionList  = MKD_NODLIST
  , autolink          = MKD_AUTOLINK
+ , tagText           = MKD_TAGTEXT
+ , cdata             = MKD_CDATA
  , strict            = MKD_STRICT
  , footnotes         = MKD_EXTRA_FOOTNOTE
+ , tableOfContents   = MKD_TOC
+ , safeLink          = MKD_SAFELINK
+ , tabstop           = MKD_TABSTOP
  }
 #include <mkdio.h>
 
